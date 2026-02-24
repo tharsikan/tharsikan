@@ -3,9 +3,9 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 // @ts-ignore
 import pg from 'pg';
 const { Pool } = pg;
-import { employees } from '../../../../shared/infrastructure/database/drizzle-schema.js';
+import { employees } from '../../../../shared/infrastructure/database/drizzle-schema.ts';
 import { eq, and } from 'drizzle-orm';
-import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards.js';
+import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards.ts';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool);

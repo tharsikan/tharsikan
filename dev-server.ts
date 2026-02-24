@@ -1,11 +1,7 @@
 import express from 'express';
-import * as identityModule from './services/identity/src/handlers/post-confirmation.js';
-import * as employeeModule from './services/employee/src/handlers/employee.js';
-import * as workflowModule from './services/attendance-leave/src/handlers/workflow.js';
-
-const identityHandler = identityModule.handler;
-const employeeHandler = employeeModule.handler;
-const workflowHandler = workflowModule.handler;
+import { handler as identityHandler } from './services/identity/src/handlers/post-confirmation.ts';
+import { handler as employeeHandler } from './services/employee/src/handlers/employee.ts';
+import { handler as workflowHandler } from './services/attendance-leave/src/handlers/workflow.ts';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 
 const app = express();

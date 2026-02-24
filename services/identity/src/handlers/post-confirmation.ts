@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 // @ts-ignore
 import pg from 'pg';
 const { Pool } = pg;
-import { employees } from '../../../../shared/infrastructure/database/drizzle-schema.js';
+import { employees } from '../../../../shared/infrastructure/database/drizzle-schema.ts';
 import { CognitoIdentityProviderClient, AdminUpdateUserAttributesCommand } from '@aws-sdk/client-cognito-identity-provider';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
