@@ -58,6 +58,7 @@ Resources:
       BuildProperties:
         Minify: true
         Target: "node22"
+        Format: esm
         EntryPoints:
           - services/identity/src/handlers/post-confirmation.ts
 
@@ -96,6 +97,7 @@ Resources:
       BuildProperties:
         Minify: true
         Target: "node22"
+        Format: esm
         EntryPoints:
           - services/employee/src/handlers/employee.ts
 
@@ -122,6 +124,7 @@ Resources:
       BuildProperties:
         Minify: true
         Target: "node22"
+        Format: esm
         EntryPoints:
           - services/attendance-leave/src/handlers/workflow.ts
 

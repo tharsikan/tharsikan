@@ -1,14 +1,16 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
-import { attendance, leaves, employees } from '../../../../shared/infrastructure/database/drizzle-schema';
+// @ts-ignore
+import pg from 'pg';
+const { Pool } = pg;
+import { attendance, leaves, employees } from '../../../../shared/infrastructure/database/drizzle-schema.js';
 import { eq, and } from 'drizzle-orm';
-import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards';
+import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards.js';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool);
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   try {
     const auth = getAuthContext(event);
     const path = event.path;
