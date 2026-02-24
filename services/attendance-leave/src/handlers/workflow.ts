@@ -66,4 +66,4 @@ async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
   }
 }
 
-export { handler };
+export default handler;

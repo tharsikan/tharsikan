@@ -33,4 +33,4 @@ async function handler(event: PostConfirmationConfirmSignUpTriggerEvent) {
   return event;
 }
 
-export { handler };
+export default handler;
