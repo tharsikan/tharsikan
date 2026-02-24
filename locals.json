@@ -1,5 +1,6 @@
 {
   "Parameters": {
-    "DatabaseUrl": "postgresql://postgres:password@host.docker.internal:5432/betterhr"
+    "DatabaseUrl": "postgresql://postgres:password@host.docker.internal:5432/betterhr",
+    "BetterHREventBus": "betterhr-events"
   }
 }

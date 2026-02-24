@@ -1,11 +1,13 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:16-alpine
     container_name: betterhr-db
     environment:
+      POSTGRES_DB: betterhr
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: betterhr
     ports:
       - "5432:5432"
     volumes:
@@ -19,11 +21,13 @@ services:
     container_name: betterhr-localstack
     ports:
       - "4566:4566"
+      - "4510-4559:4510-4559"
     environment:
       - SERVICES=s3,cognito-idp
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
+      - "./localstack_init:/etc/localstack/init/ready.d"
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - betterhr-net
@@ -31,6 +35,7 @@ services:
 networks:
   betterhr-net:
     name: betterhr-net
+    driver: bridge
 
 volumes:
   postgres_data:

@@ -1,12 +1,13 @@
 export enum Role {
   ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
+  HR = 'HR',
   EMPLOYEE = 'EMPLOYEE',
 }
 
 export interface Employee {
   id: string;
   cognitoId: string;
+  companyId: string;
   firstName: string;
   lastName: string;
   email: string;

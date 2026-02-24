@@ -1,4 +1,4 @@
-.PHONY: up down migrate sam-local test-alpha test-beta
+.PHONY: up down db-migrate seed sam-local dev-env
 
 # Start infrastructure
 up:
@@ -8,18 +8,17 @@ up:
 down:
 	docker-compose down
 
-# Run Drizzle migrations (Assumes drizzle-kit is configured)
-migrate:
+# Run Drizzle migrations (assuming drizzle-kit is configured)
+db-migrate:
 	npx drizzle-kit push
+
+# Seed the database (manual trigger if needed, though docker-compose does it on first run)
+seed:
+	docker exec -i betterhr-db psql -U postgres -d betterhr < seed.sql
 
 # Start SAM local API
 sam-local:
-	sam local start-api --env-vars locals.json --docker-network betterhr-net
+	sam local start-api --env-vars locals.json --docker-network betterhr-net --warm-containers EAGER
 
-# Helper to test Company Alpha Admin
-test-alpha:
-	curl -H "x-dev-role: ADMIN" http://localhost:3000/employees
-
-# Helper to test Company Beta Employee
-test-beta:
-	curl -H "x-dev-role: EMPLOYEE" http://localhost:3000/employees
+# Full dev environment setup
+dev-env: up db-migrate sam-local

@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { attendance, leaves } from '../../../../shared/infrastructure/database/drizzle-schema';
+import { attendance, leaves, employees } from '../../../../shared/infrastructure/database/drizzle-schema';
 import { eq, and } from 'drizzle-orm';
 import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards';
 

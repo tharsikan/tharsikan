@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { users } from '../../../../shared/infrastructure/database/drizzle-schema';
+import { employees } from '../../../../shared/infrastructure/database/drizzle-schema';
 import { eq, and } from 'drizzle-orm';
 import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards';
 
@@ -17,7 +17,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     // GET /employees - Scoped by company_id
     if (path === '/employees' && method === 'GET') {
       authorize(auth, [Role.ADMIN, Role.HR]);
-      const result = await db.select().from(users).where(eq(users.companyId, auth.companyId));
+      const result = await db.select().from(employees).where(eq(employees.companyId, auth.companyId));
       return { statusCode: 200, body: JSON.stringify(result) };
     }
 
@@ -26,11 +26,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       authorize(auth, [Role.ADMIN]);
       const targetId = event.pathParameters?.id;
       
-      const [updated] = await db.update(users)
+      const [updated] = await db.update(employees)
         .set({ role: 'HR' })
         .where(and(
-          eq(users.id, targetId!),
-          eq(users.companyId, auth.companyId) // Isolation check
+          eq(employees.id, targetId!),
+          eq(employees.companyId, auth.companyId) // Isolation check
         ))
         .returning();
 

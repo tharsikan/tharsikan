@@ -9,6 +9,8 @@
     "infra:down": "docker-compose down",
     "db:migrate": "drizzle-kit push",
     "sam:local": "sam local start-api --env-vars locals.json --docker-network betterhr-net",
+    "dev:sam": "npm run infra:up && npm run db:migrate && npm run sam:local",
+    "start": "tsx dev-server.ts",
     "build": "tsc",
     "lint": "tsc --noEmit",
     "clean": "rm -rf dist"
@@ -30,7 +32,6 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "@types/pg": "^8.16.0",
-    "drizzle-kit": "^0.31.9",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2"
   }
