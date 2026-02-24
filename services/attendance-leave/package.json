@@ -1,0 +1,8 @@
+{
+  "name": "betterhr-workflow-service",
+  "version": "1.0.0",
+  "dependencies": {
+    "drizzle-orm": "^0.39.3",
+    "pg": "^8.13.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "betterhr-identity-service",
+  "version": "1.0.0",
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.750.0",
+    "drizzle-orm": "^0.39.3",
+    "pg": "^8.13.3"
+  }
+}

@@ -1,0 +1,47 @@
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import { users } from '../../../../shared/infrastructure/database/drizzle-schema';
+import { eq, and } from 'drizzle-orm';
+import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards';
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle(pool);
+
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  try {
+    const auth = getAuthContext(event);
+    const method = event.httpMethod;
+    const path = event.path;
+
+    // GET /employees - Scoped by company_id
+    if (path === '/employees' && method === 'GET') {
+      authorize(auth, [Role.ADMIN, Role.HR]);
+      const result = await db.select().from(users).where(eq(users.companyId, auth.companyId));
+      return { statusCode: 200, body: JSON.stringify(result) };
+    }
+
+    // PATCH /employees/{id}/promote - Admin only
+    if (path.match(/\/employees\/.*\/promote/) && method === 'PATCH') {
+      authorize(auth, [Role.ADMIN]);
+      const targetId = event.pathParameters?.id;
+      
+      const [updated] = await db.update(users)
+        .set({ role: 'HR' })
+        .where(and(
+          eq(users.id, targetId!),
+          eq(users.companyId, auth.companyId) // Isolation check
+        ))
+        .returning();
+
+      return { statusCode: 200, body: JSON.stringify(updated) };
+    }
+
+    return { statusCode: 404, body: JSON.stringify({ message: 'Not Found' }) };
+  } catch (error: any) {
+    return {
+      statusCode: error.statusCode || 500,
+      body: JSON.stringify({ message: error.message }),
+    };
+  }
+};

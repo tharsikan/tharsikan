@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: betterHR Microservices API
+  description: API for Identity, Employee Profiles, Attendance, and Leave Management.
+  version: 2.0.0
+servers:
+  - url: https://api.betterhr.com/prod
+tags:
+  - name: IAM
+    description: Identity & Access Management
+  - name: Employee Profile
+    description: Employee directory and profile management
+  - name: Attendance
+    description: Clock-in/out and time tracking
+  - name: Leave Management
+    description: Leave requests and balances
+components:
+  securitySchemes:
+    CognitoAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+paths:
+  # Service A: IAM
+  /auth/login:
+    post:
+      tags: [IAM]
+      summary: Authenticate user
+      responses: { '200': { description: OK } }
+  /auth/mfa/verify:
+    post:
+      tags: [IAM]
+      summary: Verify MFA code
+      responses: { '200': { description: OK } }
+  /auth/roles:
+    get:
+      tags: [IAM]
+      summary: List user roles
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /auth/password-reset:
+    post:
+      tags: [IAM]
+      summary: Trigger password reset
+      responses: { '200': { description: OK } }
+
+  # Service B: Employee Profile
+  /employees:
+    get:
+      tags: [Employee Profile]
+      summary: List employees
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+    post:
+      tags: [Employee Profile]
+      summary: Onboard employee
+      security: [{ CognitoAuth: [] }]
+      responses: { '201': { description: Created } }
+  /employees/{id}:
+    get:
+      tags: [Employee Profile]
+      summary: Get employee profile
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /employees/{id}/org-chart:
+    get:
+      tags: [Employee Profile]
+      summary: Get org chart
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+
+  # Service C: Attendance
+  /attendance/clock-in:
+    post:
+      tags: [Attendance]
+      summary: Clock in
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /attendance/clock-out:
+    post:
+      tags: [Attendance]
+      summary: Clock out
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /attendance/history:
+    get:
+      tags: [Attendance]
+      summary: Monthly logs
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /attendance/stats:
+    get:
+      tags: [Attendance]
+      summary: Manager dashboard
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+
+  # Service D: Leave
+  /leave/types:
+    get:
+      tags: [Leave Management]
+      summary: List leave types
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /leave/balance:
+    get:
+      tags: [Leave Management]
+      summary: Get leave balance
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /leave/apply:
+    post:
+      tags: [Leave Management]
+      summary: Apply for leave
+      security: [{ CognitoAuth: [] }]
+      responses: { '201': { description: Created } }
+  /leave/requests/pending:
+    get:
+      tags: [Leave Management]
+      summary: List pending requests
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }
+  /leave/{id}/status:
+    patch:
+      tags: [Leave Management]
+      summary: Update leave status
+      security: [{ CognitoAuth: [] }]
+      responses: { '200': { description: OK } }

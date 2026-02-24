@@ -1,0 +1,5 @@
+{
+  "name": "betterHR Backend",
+  "description": "Production-ready serverless HR management backend using AWS SAM, Aurora Serverless v2, and Cognito.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,138 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: betterHR Multi-tenant Serverless Backend
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 30
+    MemorySize: 512
+    Environment:
+      Variables:
+        DATABASE_URL: !Ref DatabaseUrl
+        EVENT_BUS_NAME: !Ref BetterHREventBus
+
+Resources:
+  # --- Identity & Auth ---
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: betterhr-users
+      Schema:
+        - Name: role
+          AttributeDataType: String
+          Mutable: true
+        - Name: companyId
+          AttributeDataType: String
+          Mutable: false
+        - Name: db_id
+          AttributeDataType: String
+          Mutable: true
+      AutoVerifiedAttributes:
+        - email
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: betterhr-web-client
+
+  PostConfirmationTrigger:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/identity
+      Handler: src/handlers/post-confirmation.handler
+      Events:
+        CognitoTrigger:
+          Type: Cognito
+          Properties:
+            Trigger: PostConfirmation
+            UserPool: !Ref UserPool
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: cognito-idp:AdminUpdateUserAttributes
+              Resource: !GetAtt UserPool.Arn
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "node22"
+        EntryPoints:
+          - src/handlers/post-confirmation.ts
+
+  # --- API Gateway ---
+  BetterHRApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+  # --- Microservices ---
+  EmployeeService:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/employee
+      Handler: src/handlers/employee.handler
+      Events:
+        Employees:
+          Type: Api
+          Properties:
+            Path: /employees
+            Method: any
+            RestApiId: !Ref BetterHRApi
+        EmployeeDetail:
+          Type: Api
+          Properties:
+            Path: /employees/{id}
+            Method: any
+            RestApiId: !Ref BetterHRApi
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "node22"
+        EntryPoints:
+          - src/handlers/employee.ts
+
+  WorkflowService:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: services/attendance-leave
+      Handler: src/handlers/workflow.handler
+      Events:
+        Attendance:
+          Type: Api
+          Properties:
+            Path: /attendance/{proxy+}
+            Method: any
+            RestApiId: !Ref BetterHRApi
+        Leave:
+          Type: Api
+          Properties:
+            Path: /leave/{proxy+}
+            Method: any
+            RestApiId: !Ref BetterHRApi
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "node22"
+        EntryPoints:
+          - src/handlers/workflow.ts
+
+  # --- Database (Mocked for SAM template structure) ---
+  BetterHREventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: betterhr-events
+
+Parameters:
+  DatabaseUrl:
+    Type: String
+    Description: Connection string for Aurora Serverless v2
+    Default: "postgresql://user:password@localhost:5432/betterhr"
