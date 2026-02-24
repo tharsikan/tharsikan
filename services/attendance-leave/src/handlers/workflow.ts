@@ -3,14 +3,14 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 // @ts-ignore
 import pg from 'pg';
 const { Pool } = pg;
-import { attendance, leaves, employees } from '../../../../shared/infrastructure/database/drizzle-schema.ts';
+import { attendance, leaves, employees } from '../../../../shared/infrastructure/database/drizzle-schema.js';
 import { eq, and } from 'drizzle-orm';
-import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards.ts';
+import { getAuthContext, authorize, Role } from '../../../../shared/infrastructure/auth/guards.js';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool);
 
-export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   try {
     const auth = getAuthContext(event);
     const path = event.path;
@@ -64,4 +64,6 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       body: JSON.stringify({ message: error.message }),
     };
   }
-};
+}
+
+export { handler };

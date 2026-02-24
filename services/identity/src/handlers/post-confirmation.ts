@@ -3,14 +3,14 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 // @ts-ignore
 import pg from 'pg';
 const { Pool } = pg;
-import { employees } from '../../../../shared/infrastructure/database/drizzle-schema.ts';
+import { employees } from '../../../../shared/infrastructure/database/drizzle-schema.js';
 import { CognitoIdentityProviderClient, AdminUpdateUserAttributesCommand } from '@aws-sdk/client-cognito-identity-provider';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool);
 const cognito = new CognitoIdentityProviderClient({});
 
-export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent) {
+async function handler(event: PostConfirmationConfirmSignUpTriggerEvent) {
   const { sub, email, 'custom:companyId': companyId, 'custom:role': role } = event.request.userAttributes;
 
   // 1. Sync to RDS
@@ -31,4 +31,6 @@ export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent) 
   }));
 
   return event;
-};
+}
+
+export { handler };
