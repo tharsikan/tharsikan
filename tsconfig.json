@@ -13,7 +13,9 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "paths": {
-      "@shared/*": ["./shared/*"]
+      "@shared/*": ["./shared/*"],
+      "drizzle-orm/*": ["./node_modules/drizzle-orm/*"],
+      "pg": ["./node_modules/pg/lib/index.js"]
     }
   },
   "include": ["services/**/*", "shared/**/*"]
