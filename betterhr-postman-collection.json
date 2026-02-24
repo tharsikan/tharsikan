@@ -1,0 +1,240 @@
+{
+	"info": {
+		"_postman_id": "betterhr-api-collection",
+		"name": "betterHR API Collection",
+		"description": "API collection for betterHR Multi-tenant Serverless Backend. Includes Employee and Workflow (Attendance/Leave) services.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Employee Service",
+			"item": [
+				{
+					"name": "List Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/employees",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees"
+							]
+						},
+						"description": "Get all employees for the authenticated user's company. Requires ADMIN or HR role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/employees/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "employee-uuid-here"
+								}
+							]
+						},
+						"description": "Get details of a specific employee."
+					},
+					"response": []
+				},
+				{
+					"name": "Promote Employee",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/employees/:id/promote",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees",
+								":id",
+								"promote"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "employee-uuid-here"
+								}
+							]
+						},
+						"description": "Promote an employee to HR role. Requires ADMIN role."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Workflow Service (Attendance & Leave)",
+			"item": [
+				{
+					"name": "Attendance",
+					"item": [
+						{
+							"name": "Clock In",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{idToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/attendance/clock-in",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"attendance",
+										"clock-in"
+									]
+								},
+								"description": "Register a clock-in event for the current user."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Leave Management",
+					"item": [
+						{
+							"name": "Apply for Leave",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{idToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"startDate\": \"2024-03-01T09:00:00Z\",\n    \"endDate\": \"2024-03-05T18:00:00Z\",\n    \"type\": \"ANNUAL\",\n    \"reason\": \"Family vacation\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/leave/apply",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"leave",
+										"apply"
+									]
+								},
+								"description": "Submit a new leave application."
+							},
+							"response": []
+						},
+						{
+							"name": "Approve Leave",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{idToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/leave/:id/approve",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"leave",
+										":id",
+										"approve"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "leave-uuid-here"
+										}
+									]
+								},
+								"description": "Approve a pending leave request. Requires ADMIN or HR role."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "idToken",
+			"value": "your-cognito-id-token-here",
+			"type": "string"
+		}
+	]
+}
