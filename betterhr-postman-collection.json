@@ -2,10 +2,103 @@
 	"info": {
 		"_postman_id": "betterhr-api-collection",
 		"name": "betterHR API Collection",
-		"description": "API collection for betterHR Multi-tenant Serverless Backend. Includes Employee and Workflow (Attendance/Leave) services.",
+		"description": "API collection for betterHR Multi-tenant Serverless Backend. Includes Authentication (Cognito), Employee, and Workflow (Attendance/Leave) services.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Authentication (Cognito)",
+			"description": "Requests to interact with AWS Cognito for user authentication. Note: These requests go directly to Cognito's public API.",
+			"item": [
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Amz-Target",
+								"value": "AWSCognitoIdentityProviderService.SignUp",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-amz-json-1.1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ClientId\": \"{{clientId}}\",\n    \"Username\": \"user@example.com\",\n    \"Password\": \"Password123!\",\n    \"UserAttributes\": [\n        {\n            \"Name\": \"email\",\n            \"Value\": \"user@example.com\"\n        },\n        {\n            \"Name\": \"custom:companyId\",\n            \"Value\": \"Company_Alpha\"\n        },\n        {\n            \"Name\": \"custom:role\",\n            \"Value\": \"EMPLOYEE\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "https://cognito-idp.{{region}}.amazonaws.com/",
+							"protocol": "https",
+							"host": [
+								"cognito-idp",
+								"{{region}}",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login (InitiateAuth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.AuthenticationResult) {",
+									"    pm.environment.set(\"idToken\", jsonData.AuthenticationResult.IdToken);",
+									"    pm.environment.set(\"accessToken\", jsonData.AuthenticationResult.AccessToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Amz-Target",
+								"value": "AWSCognitoIdentityProviderService.InitiateAuth",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-amz-json-1.1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"AuthFlow\": \"USER_PASSWORD_AUTH\",\n    \"ClientId\": \"{{clientId}}\",\n    \"AuthParameters\": {\n        \"USERNAME\": \"user@example.com\",\n        \"PASSWORD\": \"Password123!\"\n    }\n}"
+						},
+						"url": {
+							"raw": "https://cognito-idp.{{region}}.amazonaws.com/",
+							"protocol": "https",
+							"host": [
+								"cognito-idp",
+								"{{region}}",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Employee Service",
 			"item": [
@@ -205,26 +298,6 @@
 			]
 		}
 	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
 	"variable": [
 		{
 			"key": "baseUrl",
@@ -232,8 +305,18 @@
 			"type": "string"
 		},
 		{
+			"key": "region",
+			"value": "us-east-1",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "your-cognito-client-id",
+			"type": "string"
+		},
+		{
 			"key": "idToken",
-			"value": "your-cognito-id-token-here",
+			"value": "",
 			"type": "string"
 		}
 	]
